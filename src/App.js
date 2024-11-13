@@ -16,7 +16,9 @@ import AuthProvider from './components/todopage/authContext';
 import { useContext } from 'react';
 import {AuthContext} from './components/todopage/authContext'
 import AddTodo from './components/adder/AddTodo';
-
+import Adder from './components/Adder';
+import Tester from './components/adder/test_ad';
+import Imgtest from './components/imgtest';
 function App() {
   const authContext=useContext(AuthContext);
   console.log(authContext);
@@ -34,6 +36,9 @@ function App() {
         <Route path='/todo' element={<ListTodoComponent/>}></Route>
         <Route path='/logout' element={<Logout/>}></Route>
         <Route path='/addtodo/:id' element={<AddTodo/>}></Route>
+        <Route path='/addtodo' element={<Adder/>}></Route>
+        <Route path="/test" element={<Tester/>}></Route>
+        <Route path="/imgtest" element={<Imgtest/>}></Route>
       </Routes>
       <Footer></Footer>
       </BrowserRouter>

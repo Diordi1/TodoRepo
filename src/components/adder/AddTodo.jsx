@@ -11,7 +11,7 @@ export default function AddTodo(){
 
 
     useEffect(
-        ()=>get1(),[id]
+        ()=>get1()
     )
     const temp={
         id:0,
@@ -21,9 +21,27 @@ export default function AddTodo(){
     }
 
     const [val,setVal]=useState(temp);
+    const [tok,settok]=useState('');
+        async function autho(){
+            await axios.post(`http://localhost:8080/authenticate`,{
+                username:"in28minutes",
+                password:"dummy"
+            }).then(response=>{
+                settok(response.data.token);
+                console.log(response+"completed");
+                
+            }).catch(err=>console.log(err));
+    
+        }
+     function get1(){
+         autho();
 
-    function get1(){
-        axios.get(`http://localhost:8080/todos1/hero/list/${id}`)
+        axios.get(`http://localhost:8080/todos1/hero/list/${id}`,{
+            headers:{
+                Authorization:'Bearer '+tok
+
+            }
+        })
         .then((response)=>{
             setVal(response.data)
             console.log(response);
@@ -34,16 +52,18 @@ export default function AddTodo(){
 
     }
 
-    const [err,seterr]=useState({});
+    // const [err,seterr]=useState({});
     function validate(val1){
+        // console.log(val1.val.des);
 
         let errors = {
-            despi:'this is despi'
-        };
-        if (val1.val.des.length < 10) {
-          errors.des = "Email is too short";
+            description:val1.val,
+
+            // targetDate: 'Enter a valid target date'
         }
-        console.log(errors.des);
+        // console.log(errors.val1.val.des);
+
+console.log(errors.description);
 
 
         return errors;
@@ -64,7 +84,12 @@ export default function AddTodo(){
         // console.log(temper1);
 
 
-        axios.post(`http://localhost:8080/todos1/hero/list/${id}`,val1.val)
+        axios.put(`http://localhost:8080/todos1/hero/list/${id}`,val1.val,{
+            headers:{
+                Authorization:'Bearer '+tok
+                
+            }
+        })
         .then((response)=>{
             console.log(response);
             navigate('/todo');
@@ -80,13 +105,15 @@ export default function AddTodo(){
     <Formik initialValues={{val}}
     enableReinitialize={true}
     onSubmit={onSubm}
-    validate={validate}
+   
+   
     >
         {
             (props)=>(
 
         <Form>
-            <ErrorMessage component="div" name="despi"/>
+            <ErrorMessage component="div" name="val1.val" className="warning warning-alert"></ErrorMessage>
+            
             <hr></hr>
                 <div>hello</div>
             

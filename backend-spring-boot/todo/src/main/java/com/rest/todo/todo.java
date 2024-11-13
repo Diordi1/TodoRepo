@@ -2,7 +2,15 @@ package com.rest.todo;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
 public class todo {
+	public todo() {
+		
+	}
+	@Id
 	int id;
 	boolean done;
 	String des;

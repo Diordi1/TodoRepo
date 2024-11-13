@@ -1,52 +1,80 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './login.css'
 import {useNavigate, useParams,Link} from 'react-router-dom'
 import axios from 'axios';
+import { apiClient } from '../../apiService/ApiClient.js';
+export function tokeer(token){
+    const toke=token
+}
 export default function Login(){
-    const [value1,setValue]=useState('in28')
-    const [value2,setValuePass]=useState('pass');
+    const [value1,setValue]=useState('in28minutes')
+    const [value2,setValuePass]=useState('dummy');
     const [authe1,setAuthe]=useState(false)
     const [notauthe,setnotAuthe]=useState(false);
     const navigate=useNavigate();
-
+    const [token,setToken]=useState('');
     function change(event){
         console.log("change was called");
         setValue(event.target.value);
-
+        
     }
     function changePass(event){
         setValuePass(event.target.value);
-
+        
     }
-    function authe(){
-        if(value1==='in28'&&value2==='pass'){
-        setAuthe(true);
-        setnotAuthe(false);
-        navigate(`/welcome/${value1}`);
 
+    // const setToken=(token)=>{
+        
+    // }
+    async function authe(){
+        const token1='Basic '+btoa(value1+':'+value2);
+        console.log(btoa(value1+':'+value2));
 
+try{
+
+    const res=await axios.post("http://localhost:8080/authenticate",{
+        username:value1,
+        password:value2
+    });
+
+    
+        if(res.status===200){
+            setAuthe(true);
+            setnotAuthe(false);
+            navigate(`/welcome/${value1}`);
+            setToken('Bearer '+res.data.token);
+            tokeer(token1);
+
+             console.log("adding");
+             
+            
         }else{
             setnotAuthe(true);
             setAuthe(false);
+            setToken(null);
 
         }
+    }catch(error){
+        setnotAuthe(true);
+            setAuthe(false);
+    }
     }
     // function Dis(){
     //     if(authe1){
-    //         return(
-    //             <div>Authenicated</div>
-    //         );
-    //     }
-    // }
-    // function Dis1(){
-    //     if(notauthe){
-    //         return(
-    //             <div>Not authenicated</div>
-    //         );
-    //     }
-    // }
-
-    return(
+        //         return(
+            //             <div>Authenicated</div>
+            //         );
+            //     }
+            // }
+            // function Dis1(){
+                //     if(notauthe){
+                    //         return(
+                        //             <div>Not authenicated</div>
+                        //         );
+                        //     }
+                        // }
+                        
+                        return(
         <div>
 
         {authe1&&<div>Authenicated</div>}
@@ -56,19 +84,46 @@ export default function Login(){
         <p><button onClick={authe}>Login</button></p>
         </div>
     );
-
+    
 }
 export function Welcome(){
+   
     const param=useParams();
     console.log(param.username);
     const [prev,setPrev]=useState("");
     const [data,setData]=useState("data");
-    
+    const [toke,setToke]=useState("");
+
+    async function autho()
+    {
+        await axios.post("http://localhost:8080/authenticate",{
+            username:'in28minutes',
+            password:'dummy'
+        }).then(response=>{
+            setToke(response.data.token);
+            console.log(response);
+            console.log(toke);
+            return response;
+
+        })
+      
+
+
+    }
     function callf(d1){
-        axios.get(`http://localhost:8080/todos1/${d1}`)
+        if(autho.status===200){
+
+            axios.get(`http://localhost:8080/todos1/${d1}`,{
+                headers:{
+                Authentication:'Bearer '+toke
+
+            }
+        })
+        
         .then((response)=>responseTrigger(response))
         .catch((err)=> errTrigger(err))
         .finally(()=>console.log("Completed"));
+    }
 
     }
     function responseTrigger(response){
@@ -76,17 +131,17 @@ export function Welcome(){
         console.log(response.data.message);
         setPrev(response.data.message);
 
-
+        
     }
     function errTrigger(err){
         console.log(err);
-
+        
     }
     // const change=onChange();
-
+    
     function changed(event){
         setData(event.target.value);
-
+        
     }
     return(
         <div>
@@ -101,7 +156,24 @@ export function Welcome(){
     );
 }
 // axios.create(
-//     {
-//         baseURL:'http://localhost:8080'
-//     }
+    //     {
+        //         baseURL:'http://localhost:8080'
+        //     }
 // )
+        export const basicauth=(token)=>{
+            return axios.get("http://localhost:8080/basic",{
+                headers:{
+                    Authorization:token,
+                }
+            })
+        }
+     export function tokenDist(){
+        axios.post(`http://localhost:8080/authenticate`,{
+            username:'in28minutes',
+            password:'dummy'
+        }).then(response=>{
+            return response.data.token;
+
+        }).catch(err=>console.log(err));
+
+     }
